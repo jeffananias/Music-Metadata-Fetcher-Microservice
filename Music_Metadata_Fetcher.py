@@ -27,11 +27,13 @@ def get_file_text() -> str:
     """
     try:
         with open(REQUEST_FILE, 'r') as f:
-            return f.read().strip()
+            file_text = f.read().strip()
     except FileNotFoundError:
         with open(REQUEST_FILE, 'w') as f:
             f.write('')
-        return ''
+        file_text = ''
+    
+    return file_text
 
 
 def validate_request(file_text: str, last_file_text: str) -> bool:
@@ -39,7 +41,7 @@ def validate_request(file_text: str, last_file_text: str) -> bool:
     TODO: Write docstring
     """
     newline_count = len(file_text.split('\n'))
-    if file_text != ('' or last_file_text) and newline_count == 0:
+    if file_text != '' and file_text != last_file_text and newline_count == 1:
         return True
     else:
         return False
@@ -50,7 +52,7 @@ def process_metadata(song_path: str) -> str:
     TODO: Write docstring
     """
     tag: TinyTag = TinyTag.get(song_path)
-    return '{tag.artist}\n{tag.album}\n{tag.genre}\n{tag.year}'
+    return f'{tag.artist}\n{tag.album}\n{tag.genre}\n{tag.year}'
 
 
 def process_request(file_text: str, last_file_text: str) -> str:
