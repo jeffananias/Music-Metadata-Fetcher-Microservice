@@ -17,8 +17,8 @@ def greet() -> None:
     """
     print('\nMusic Metadata Fetcher Microservice is running.')
     print('Waiting for metadata request in music_metadata.txt.')
-    print('Request must be a music file path.')
-    print('Response is multi-line string of artist, album, genre, year.\n')
+    print('Request is 1-line string of absolute path to music file.')
+    print('Response is 4-line string of artist, album, genre, and year.\n')
 
 
 def get_file_text() -> str:
@@ -85,6 +85,7 @@ def run_microservice() -> None:
         file_text = get_file_text()
         last_file_text = process_request(file_text, last_file_text)
         time.sleep(1)
+
 
 if __name__ == '__main__':
     run_microservice()
