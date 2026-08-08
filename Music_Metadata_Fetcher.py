@@ -1,6 +1,6 @@
 # Group: The Abstraction Layer
 # Course: CS361
-# Assignment: 7 - Big Pool Implementation
+# Assignment: 9 - Big Pool Implementation
 # Microservice: Music Metadata Fetcher
 # Due Date: 2026-08-10
 
@@ -18,7 +18,7 @@ def greet() -> None:
     print('\nMusic Metadata Fetcher Microservice is running.')
     print('Waiting for metadata request in music_metadata.txt.')
     print('Request must be a music file path.')
-    print('Response is a 4-tuple of artist, album, genre, and year.\n')
+    print('Response is multi-line string of artist, album, genre, year.\n')
 
 
 def get_file_text() -> str:
