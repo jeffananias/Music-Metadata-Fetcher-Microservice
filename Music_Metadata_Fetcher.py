@@ -8,17 +8,17 @@ from tinytag import TinyTag
 import time
 
 
-REQUEST_FILE = 'music_metadata.txt'
+REQUEST_FILE = "music_metadata.txt"
 
 
 def greet() -> None:
     """
     Greet user and advise request-response format.
     """
-    print('\nMusic Metadata Fetcher Microservice is running.')
-    print('Waiting for metadata request in music_metadata.txt.')
-    print('Request is 1-line string of absolute path to music file.')
-    print('Response is 4-line string of artist, album, genre, and year.\n')
+    print("\nMusic Metadata Fetcher Microservice is running.")
+    print("Waiting for metadata request in music_metadata.txt.")
+    print("Request is string of one or more absolute paths to music files.")
+    print("Response is string of groups of artist, album, genre, year.\n")
 
 
 def get_file_text() -> str:
@@ -27,35 +27,48 @@ def get_file_text() -> str:
     return empty string.
     """
     try:
-        with open(REQUEST_FILE, 'r') as f:
+        with open(REQUEST_FILE, "r") as f:
             file_text = f.read().strip()
     except FileNotFoundError:
-        with open(REQUEST_FILE, 'w') as f:
-            f.write('')
-        file_text = ''
+        with open(REQUEST_FILE, "w") as f:
+            f.write("")
+        file_text = ""
     
     return file_text
 
 
 def validate_request(file_text: str, last_file_text: str) -> bool:
     """
-    Return true if text from REQUEST FILE exists, does not match the last
-    file text, and has only one newline; else, return false.
+    Return true if text from REQUEST FILE exists and does not match the last
+    file text; else, return false.
     """
-    newline_count = len(file_text.split('\n'))
-    if file_text != '' and file_text != last_file_text and newline_count == 1:
+    if file_text != "" and file_text != last_file_text:
         return True
     else:
         return False
 
 
-def process_metadata(song_path: str) -> str:
+def get_song_paths() -> list:
+    """
+    Return list of absolute paths to music files based on file text.
+    """
+    song_paths = []
+    with open(REQUEST_FILE, "r") as f:
+        song_paths = f.read().splitlines()
+    return song_paths
+
+
+def process_metadata(song_paths: list) -> str:
     """
     Return string of artist, album, genre, and year tags on new lines
     based on metadata of the song file in the input path.
     """
-    tag: TinyTag = TinyTag.get(song_path)
-    return f'{tag.artist}\n{tag.album}\n{tag.genre}\n{tag.year}'
+    metadata = ""
+    for song_path in song_paths:
+        tag: TinyTag = TinyTag.get(song_path)
+        metadata = metadata + \
+            f"{tag.artist}\n{tag.album}\n{tag.genre}\n{tag.year}\n"
+    return metadata[:-1]
 
 
 def process_request(file_text: str, last_file_text: str) -> str:
@@ -64,11 +77,12 @@ def process_request(file_text: str, last_file_text: str) -> str:
     request is invalid.
     """
     if validate_request(file_text, last_file_text) is True:
-        print('Request received: ' + file_text)
-        response = process_metadata(file_text)
-        with open(REQUEST_FILE, 'w') as f:
+        print("Request received: " + file_text)
+        song_paths = get_song_paths()
+        response = process_metadata(song_paths)
+        with open(REQUEST_FILE, "w") as f:
             f.write(response)
-        print('Response sent: \n' + response)
+        print("Response sent: \n" + response)
         return response
     else:
         return file_text
@@ -80,12 +94,12 @@ def run_microservice() -> None:
     """
     greet()
 
-    last_file_text = ''
+    last_file_text = ""
     while True:
         file_text = get_file_text()
         last_file_text = process_request(file_text, last_file_text)
         time.sleep(1)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     run_microservice()
