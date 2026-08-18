@@ -1,6 +1,6 @@
 # Music Metadata Fetcher Microservice
 
-Retrieve artist, album, genre, and year from music files.
+Retrieve artist, album, and year from music files.
 
 Input: 1-line string of absolute path to music file
 
