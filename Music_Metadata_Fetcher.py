@@ -91,7 +91,7 @@ def process_metadata(song_paths: list) -> str:
     metadata = ""
     for song_path in song_paths:
         tag: tinytag.TinyTag = tinytag.TinyTag.get(song_path)
-        metadata = metadata + f"{tag.artist}\n{tag.album}\n{tag.genre}\n{tag.year}\n"
+        metadata = metadata + f"{tag.artist}\n{tag.album}\n{tag.year}\n"
     return metadata[:-1]
 
 
