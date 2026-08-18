@@ -17,3 +17,9 @@ Beatles
 Help!
 1965
 ```
+
+---
+
+## Dependencies
+
+Install tinytag >= 2.3.0 with `pip install tinytag`.
