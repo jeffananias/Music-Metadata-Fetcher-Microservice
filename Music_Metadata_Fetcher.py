@@ -4,17 +4,25 @@
 # Microservice: Music Metadata Fetcher
 # Due Date: 2026-08-10
 
-from tinytag import TinyTag
 import time
 
+import tinytag
 
 REQUEST_FILE = "music_metadata.txt"
 
 
+def main() -> None:
+    """Start microservice as continuous process."""
+    greet()
+    last_file_text = ""
+    while True:
+        file_text = get_file_text()
+        last_file_text = process_request(file_text, last_file_text)
+        time.sleep(0.5)
+
+
 def greet() -> None:
-    """
-    Greet user and advise request-response format.
-    """
+    """Greet user and advise request-response format."""
     print("\nMusic Metadata Fetcher Microservice is running.")
     print("Waiting for metadata request in music_metadata.txt.")
     print("Request is string of one or more absolute paths to music files.")
@@ -33,19 +41,36 @@ def get_file_text() -> str:
         with open(REQUEST_FILE, "w") as f:
             f.write("")
         file_text = ""
-    
     return file_text
 
 
-def validate_request(file_text: str, last_file_text: str) -> bool:
+def process_request(file_text: str, last_file_text: str) -> str:
     """
-    Return true if text from REQUEST FILE exists and does not match the last
-    file text; else, return false.
+    Return response based on request or return original file text if
+    request is invalid.
     """
     if file_text != "" and file_text != last_file_text:
-        return True
-    else:
-        return False
+        if is_response_message(file_text):
+            return file_text
+        else:
+            print("Request received: " + file_text)
+            song_paths = get_song_paths()
+            response = process_metadata(song_paths)
+            with open(REQUEST_FILE, "w") as f:
+                f.write(response)
+            print("Response sent:\n" + response)
+            return response
+    return last_file_text
+
+
+def is_response_message(file_text: str) -> bool:
+    """
+    Return True if file_text is response instead of request;
+    else return False.
+    """
+    file_lines = file_text.split("\n")
+    music_exts = (".mp3", ".wav", ".flac", ".aac", ".ogg")
+    return bool(file_lines[0].endswith(music_exts) is False)
 
 
 def get_song_paths() -> list:
@@ -61,45 +86,14 @@ def get_song_paths() -> list:
 def process_metadata(song_paths: list) -> str:
     """
     Return string of artist, album, genre, and year tags on new lines
-    based on metadata of the song file in the input path.
+    based on metadata of song file in input path.
     """
     metadata = ""
     for song_path in song_paths:
-        tag: TinyTag = TinyTag.get(song_path)
-        metadata = metadata + \
-            f"{tag.artist}\n{tag.album}\n{tag.genre}\n{tag.year}\n"
+        tag: tinytag.TinyTag = tinytag.TinyTag.get(song_path)
+        metadata = metadata + f"{tag.artist}\n{tag.album}\n{tag.genre}\n{tag.year}\n"
     return metadata[:-1]
 
 
-def process_request(file_text: str, last_file_text: str) -> str:
-    """
-    Return response based on request or return original file text if the
-    request is invalid.
-    """
-    if validate_request(file_text, last_file_text) is True:
-        print("Request received: " + file_text)
-        song_paths = get_song_paths()
-        response = process_metadata(song_paths)
-        with open(REQUEST_FILE, "w") as f:
-            f.write(response)
-        print("Response sent: \n" + response)
-        return response
-    else:
-        return file_text
-
-
-def run_microservice() -> None:
-    """
-    Start microservice as a continuous process.
-    """
-    greet()
-
-    last_file_text = ""
-    while True:
-        file_text = get_file_text()
-        last_file_text = process_request(file_text, last_file_text)
-        time.sleep(1)
-
-
 if __name__ == "__main__":
-    run_microservice()
+    main()
