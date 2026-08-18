@@ -53,7 +53,7 @@ def process_request(file_text: str, last_file_text: str) -> str:
         if is_response_message(file_text):
             return file_text
         else:
-            print("Request received: " + file_text)
+            print("Request received:\n" + file_text)
             song_paths = get_song_paths()
             response = process_metadata(song_paths)
             with open(REQUEST_FILE, "w") as f:
