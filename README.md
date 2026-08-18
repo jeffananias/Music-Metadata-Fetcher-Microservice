@@ -9,12 +9,11 @@ Example:
 /Users/user/Music/song.mp3
 ```
 
-Output: 4-line string of artist, album, genre, and year
+Output: 3-line string of artist, album, and year
 
 Example: 
 ```
 Beatles
 Help!
-Rock
 1965
 ```
