@@ -26,7 +26,7 @@ def greet() -> None:
     print("\nMusic Metadata Fetcher Microservice is running.")
     print("Waiting for metadata request in music_metadata.txt.")
     print("Request is string of one or more absolute paths to music files.")
-    print("Response is string of groups of artist, album, genre, year.\n")
+    print("Response is string of groups of artist, album, year.\n")
 
 
 def get_file_text() -> str:
@@ -85,7 +85,7 @@ def get_song_paths() -> list:
 
 def process_metadata(song_paths: list) -> str:
     """
-    Return string of artist, album, genre, and year tags on new lines
+    Return string of artist, album, and year tags on new lines
     based on metadata of song file in input path.
     """
     metadata = ""
